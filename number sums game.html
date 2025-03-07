@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Sum Puzzle Game</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            display: inline-block;
+            margin-top: 20px;
+            border: 2px solid black;
+            padding: 20px;
+            background: #f8f8f8;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 50px);
+            gap: 5px;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 20px;
+            background: lightblue;
+            cursor: pointer;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+        .selected {
+            background: green;
+            color: white;
+        }
+        .eliminated {
+            background: gray;
+            color: white;
+        }
+        .marked {
+            background: yellow;
+            color: black;
+        }
+        .heart {
+            color: red;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Number Sum Puzzle Game</h2>
+    <p>Find numbers that add up to the target sum!</p>
+    <p>Target Sum: <span id="target-sum"></span></p>
+    <div id="hearts">❤️❤️</div>
+    <div id="game-container">
+        <div class="grid" id="grid"></div>
+    </div>
+    <br>
+    <button onclick="toggleMode('select')">🖊️ Select</button>
+    <button onclick="toggleMode('mark')">✏️ Mark</button>
+    <button onclick="toggleMode('erase')">🧽 Erase</button>
+    
+    <script>
+        let targetSum;
+        let selectedNumbers = [];
+        let mode = 'select'; // select, mark, erase
+        let lives = 2;
+
+        function generateGame() {
+            document.getElementById("grid").innerHTML = "";
+            selectedNumbers = [];
+            targetSum = Math.floor(Math.random() * 20) + 10;
+            document.getElementById("target-sum").textContent = targetSum;
+
+            for (let i = 0; i < 36; i++) {
+                let num = Math.floor(Math.random() * 9) + 1;
+                let cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.textContent = num;
+                cell.onclick = () => handleCellClick(cell, num);
+                document.getElementById("grid").appendChild(cell);
+            }
+        }
+
+        function handleCellClick(cell, num) {
+            if (mode === 'select') {
+                if (!cell.classList.contains("selected")) {
+                    selectedNumbers.push(num);
+                    cell.classList.add("selected");
+                }
+            } else if (mode === 'mark') {
+                cell.classList.add("marked");
+            } else if (mode === 'erase') {
+                cell.classList.remove("selected", "marked");
+                selectedNumbers = selectedNumbers.filter(n => n !== num);
+            }
+
+            checkSum();
+        }
+
+        function checkSum() {
+            let sum = selectedNumbers.reduce((a, b) => a + b, 0);
+            if (sum === targetSum) {
+                alert("Correct! New puzzle!");
+                generateGame();
+            } else if (sum > targetSum) {
+                lives--;
+                document.getElementById("hearts").textContent = lives === 1 ? "❤️" : "";
+                if (lives === 0) {
+                    alert("Game Over! Try Again.");
+                    location.reload();
+                } else {
+                    alert("Wrong! You lost a heart.");
+                    generateGame();
+                }
+            }
+        }
+
+        function toggleMode(selectedMode) {
+            mode = selectedMode;
+        }
+
+        generateGame();
+    </script>
+</body>
+</html>

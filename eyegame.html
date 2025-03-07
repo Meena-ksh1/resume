@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blink Timing Game</title>
+    <style>
+   body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 100px; 
+            height: 100vh;
+            background-color: #d3d3d3;
+            overflow: hidden;
+        }
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px; 
+        }
+
+        .game-header {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .instructions-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+        } 
+        
+        .eye-container{
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+        }
+        .eye, .left-eye {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #ff8888, #fb4a4a);
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0px 4px 10px rgba(246, 117, 117, 0.2);
+        }
+        .iris, .left-iris {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #0080ff, #004080);
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .pupil, .left-pupil {
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, #3d3d3d, #2c2c2d);
+            border-radius: 50%;
+        }
+        .eyelid, .left-eyelid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgb(236, 191, 191);
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.2s ease-in-out;
+        }        .score {
+            font-size: 24px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="game-header">Blink Timing Game</div>
+        <div class="instructions-box">Click exactly when the eyes open to earn points! The faster you react, the higher your score.</div>
+    </div>    <div class="eye-container">
+        <div class="eye">
+            <div class="iris">
+                <div class="pupil"></div>
+            </div>
+            <div class="eyelid"></div>
+        </div>
+        <div class="eye">
+            <div class="iris">
+                <div class="pupil"></div>
+            </div>
+            <div class="eyelid"></div>
+        </div>
+    </div>
+    <div class="score">Score: 0</div>
+    
+    <script>
+        let score = 0;
+        const eyelids = document.querySelectorAll('.eyelid');
+        const scoreDisplay = document.querySelector('.score');
+        let blinkEndTime = 0;
+        
+        function blink() {
+            const blinkTime = Math.random() * 5000 + 2000; 
+            setTimeout(() => {
+                eyelids.forEach(eyelid => eyelid.style.transform = 'scaleY(1)'); 
+                setTimeout(() => {
+                    eyelids.forEach(eyelid => eyelid.style.transform = 'scaleY(0)'); 
+                    blinkEndTime = Date.now(); 
+                    blink(); 
+                }, 200);
+            }, blinkTime);
+        }
+
+        document.addEventListener('click', () => {
+            const clickTime = Date.now();
+            const reactionTime = Math.abs(clickTime - blinkEndTime);
+            
+            if (reactionTime <= 200) {
+                let points = 200 - reactionTime;
+                score += Math.max(points, 1); 
+                scoreDisplay.textContent = `Score: ${score}`;
+            }
+        });
+        
+        blink();
+    </script>
+</body>
+</html>
